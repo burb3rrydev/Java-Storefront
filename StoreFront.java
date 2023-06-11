@@ -1,18 +1,19 @@
 package gamestore;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
 public class StoreFront {
     private InventoryManager inventoryManager;
-    private ShoppingCart shoppingCart;
+    private ShoppingCart<Product> shoppingCart;
     private Scanner scanner;
 
     public StoreFront() {
-        inventoryManager = new InventoryManager(); // Create an instance of the InventoryManager
-        shoppingCart = new ShoppingCart(); // Create an instance of the ShoppingCart
-        scanner = new Scanner(System.in); // Create a Scanner object for user input
+        inventoryManager = new InventoryManager();
+        shoppingCart = new ShoppingCart<>();
+        scanner = new Scanner(System.in);
     }
 
     public void startShopping() {
@@ -22,8 +23,12 @@ public class StoreFront {
             System.out.println("--------------------------------------------------");
             System.out.println("Products available:");
 
-            for (Product product : inventoryManager.getInventory()) {
-                // Print information about each product in the inventory
+            List<Product> inventory = inventoryManager.getInventory();
+
+            // Sort inventory based on name in ascending order
+            Collections.sort(inventory, Comparator.comparing(Product::getName));
+
+            for (Product product : inventory) {
                 System.out.println(product.getName() + " - " + product.getDescription() + " - $" + product.getPrice() + " - Quantity: " + product.getQuantity());
             }
 
@@ -32,27 +37,43 @@ public class StoreFront {
             System.out.println("1. Add a product to the cart");
             System.out.println("2. Remove a product from the cart");
             System.out.println("3. View cart");
-            System.out.println("4. Checkout");
-            System.out.println("5. Exit store");
+            System.out.println("4. Sort inventory by name (ascending)");
+            System.out.println("5. Sort inventory by name (descending)");
+            System.out.println("6. Sort inventory by price (ascending)");
+            System.out.println("7. Sort inventory by price (descending)");
+            System.out.println("8. Checkout");
+            System.out.println("9. Exit store");
 
             System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt(); // Read the user's choice
+            int choice = scanner.nextInt();
 
             switch (choice) {
                 case 1:
-                    addToCart(); // Call the addToCart() method
+                    addToCart();
                     break;
                 case 2:
-                    removeFromCart(); // Call the removeFromCart() method
+                    removeFromCart();
                     break;
                 case 3:
-                    viewCart(); // Call the viewCart() method
+                    viewCart();
                     break;
                 case 4:
-                    checkout(); // Call the checkout() method
+                    sortInventoryByName(true);
                     break;
                 case 5:
-                    exitStore(); // Call the exitStore() method
+                    sortInventoryByName(false);
+                    break;
+                case 6:
+                    sortInventoryByPrice(true);
+                    break;
+                case 7:
+                    sortInventoryByPrice(false);
+                    break;
+                case 8:
+                    checkout();
+                    break;
+                case 9:
+                    exitStore();
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -166,6 +187,53 @@ public class StoreFront {
 
     private void exitStore() {
         System.out.println("Thank you for visiting the Store Front. Goodbye!");
+    }
+    
+    private void sortInventoryByName(boolean ascending) {
+        // Retrieve the inventory list from the inventory manager
+        List<Product> inventory = inventoryManager.getInventory();
+
+        if (ascending) {
+            // Utility method from java collections framework to sort the inventory list by product name in ascending order
+        	// Comparator.comparing() is a static method that returns a comparator 
+        	// Product::getName is a method reference that represents the getName() method of the Product class.
+        	
+            Collections.sort(inventory, Comparator.comparing(Product::getName));
+            System.out.println("--------------------------------------------------");
+            System.out.println("Inventory sorted by name (ascending):");
+        } else {
+            // Sort the inventory list by product name in descending order
+            Collections.sort(inventory, Comparator.comparing(Product::getName).reversed());
+            System.out.println("--------------------------------------------------");
+            System.out.println("Inventory sorted by name (descending):");
+        }
+
+        // Print the information about each product in the sorted inventory
+        for (Product product : inventory) {
+            System.out.println(product.getName() + " - " + product.getDescription() + " - $" + product.getPrice() + " - Quantity: " + product.getQuantity());
+        }
+    }
+
+    private void sortInventoryByPrice(boolean ascending) {
+        // Retrieve the inventory list from the inventory manager
+        List<Product> inventory = inventoryManager.getInventory();
+
+        if (ascending) {
+            // Sort the inventory list by product price in ascending order
+            Collections.sort(inventory, Comparator.comparing(Product::getPrice));
+            System.out.println("--------------------------------------------------");
+            System.out.println("Inventory sorted by price (ascending):");
+        } else {
+            // Sort the inventory list by product price in descending order
+            Collections.sort(inventory, Comparator.comparing(Product::getPrice).reversed());
+            System.out.println("--------------------------------------------------");
+            System.out.println("Inventory sorted by price (descending):");
+        }
+
+        // Print the information about each product in the sorted inventory
+        for (Product product : inventory) {
+            System.out.println(product.getName() + " - " + product.getDescription() + " - $" + product.getPrice() + " - Quantity: " + product.getQuantity());
+        }
     }
 
     public static void main(String[] args) {
