@@ -237,8 +237,11 @@ public class StoreFront {
     }
 
     public static void main(String[] args) {
+        AdminServerApp.main(args);
         StoreFront storeFront = new StoreFront();
         storeFront.startShopping(); // Start the shopping process
+        
+
     }
 }
 
